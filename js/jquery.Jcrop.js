@@ -1,6 +1,6 @@
 /**
  * jquery.Jcrop.js v0.9.12
- * jQuery Image Cropping Plugin - released under MIT License 
+ * jQuery Image Cropping Plugin - released under MIT License
  * Author: Kelly Hallman <khallman@gmail.com>
  * http://github.com/tapmodo/Jcrop
  * Copyright (c) 2008-2013 Tapmodo Interactive LLC {{{
@@ -323,7 +323,7 @@
                 $origimg.width($origimg[0].width);
                 $origimg.height($origimg[0].height);
             } else {
-                // Obtain dimensions from temporary image in case the original is not loaded yet (e.g. IE 7.0). 
+                // Obtain dimensions from temporary image in case the original is not loaded yet (e.g. IE 7.0).
                 var tempImage = new Image();
                 tempImage.src = $origimg[0].src;
                 $origimg.width(tempImage.width);
@@ -411,7 +411,7 @@
         // }}}
         // }}}
         // Internal Modules {{{
-        // Touch Module {{{ 
+        // Touch Module {{{
         var Touch = (function () {
             // Touch support detection function adapted (under MIT License)
             // from code by Jeffrey Sambells - http://github.com/iamamused/
@@ -514,7 +514,7 @@
             function scale(c, step, reactivity) {
                 if (typeof (c) !== "undefined") {
                     s = clamp(s + step, 0, 1);
-               
+
                     if (reactivity && s != 1) {
                         translate(-reactivity.coefficient * (2 * reactivity.x - c.w) / c.w, -reactivity.coefficient * (2 * reactivity.y - c.h) / c.h);
                     }
@@ -1245,7 +1245,7 @@
             disableHandles();
 
             Transform.on('change', update);
-            
+
             return {
                 updateVisible: updateVisible,
                 update: update,
@@ -1642,10 +1642,13 @@
         }
 
         function report() {
-            options.onSelect.call(api, {
-                selection: tellSelect(),
-                transform: tellTransform()
-            });
+            var format = options.formatSelect.call(api, tellSelect(), tellTransform());
+
+            if (typeof(format) === "array") {
+                options.onSelect.apply(api, format);
+            } else {
+                options.onSelect.call(api, format);
+            }
         }
 
         //}}}
@@ -1973,7 +1976,19 @@
         onChange: function () { },
         onSelect: function () { },
         onDblClick: function () { },
-        onRelease: function () { }
+        onRelease: function () { },
+        formatSelect: function (selection, transform) {
+          return {
+            height: selection.h,
+            width: selection.w,
+            x: selection.x,
+            y: selection.y,
+            translateX: transform.t[0],
+            translateY: transform.t[1],
+            rotate: transform.r,
+            scale: transform.s
+          };
+        }
     };
 
     // }}}
