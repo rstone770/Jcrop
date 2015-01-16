@@ -1976,15 +1976,14 @@
         onDblClick: function () { },
         onRelease: function () { },
         formatSelect: function (selection, transform) {
+          var scale = 1 / transform.s;
+
           return {
-            height: selection.h,
-            width: selection.w,
-            x: selection.x,
-            y: selection.y,
-            translateX: transform.t[0],
-            translateY: transform.t[1],
-            rotate: transform.r,
-            scale: transform.s
+            selectionX: (selection.x - transform.t[0]) * scale,
+            selectionY: (selection.y - transform.t[1]) * scale,
+            selectionW: selection.h * scale,
+            selectionH: selection.w * scale,
+            rotate: transform.r
           };
         }
     };

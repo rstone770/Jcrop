@@ -2,7 +2,14 @@ var gulp = require('gulp'),
     less = require('gulp-less'),
     ugly = require('gulp-uglify'),
     cssmin = require('gulp-minify-css'),
-    rename = require('gulp-rename');
+    rename = require('gulp-rename'),
+    watch = require('gulp-watch');
+
+gulp.task('watch', function () {
+  watch('./{less,js}/**/*.*', function () {
+    gulp.start('default');
+  });
+});
 
 gulp.task('less', function () {
   var dev = './bin/dev/css';
