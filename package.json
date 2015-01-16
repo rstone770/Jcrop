@@ -18,5 +18,12 @@
   "homepage": "https://github.com/rstone770/Jcrop",
   "dependencies": {
     "gulp": "^3.8.10"
+  },
+  "devDependencies": {
+    "gulp": "^3.8.10",
+    "gulp-less": "^2.0.1",
+    "gulp-minify-css": "^0.3.12",
+    "gulp-rename": "^1.2.0",
+    "gulp-uglify": "^1.0.2"
   }
 }
