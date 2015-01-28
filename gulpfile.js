@@ -3,7 +3,8 @@ var gulp = require('gulp'),
     ugly = require('gulp-uglify'),
     cssmin = require('gulp-minify-css'),
     rename = require('gulp-rename'),
-    watch = require('gulp-watch');
+    watch = require('gulp-watch'),
+    browserify = require('gulp-browserify')
 
 gulp.task('watch', function () {
   watch('./{less,js}/**/*.*', function () {
@@ -36,6 +37,7 @@ gulp.task('less.minify', ['less'], function () {
 
 gulp.task('script', function () {
   gulp.src('./js/jquery.jcrop.js')
+    .pipe(browserify())
     .pipe(gulp.dest('./bin/dev/js'));
 });
 
