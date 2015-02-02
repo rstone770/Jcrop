@@ -1284,25 +1284,28 @@ module.exports = defaults;
 				if ($(e.currentTarget).hasClass('jcrop-tracker')) e.stopPropagation();
 			});
 
-			var $track = newTracker().mousedown(createDragger('move')).on('mousewheel', function (e) {
+			var $track = newTracker()
+			.mousedown(createDragger('move'))
+			.bind('mousewheel DOMMouseScroll', function (e) {
 				e.preventDefault();
 				e.stopPropagation();
 
 				var c = Coords.getFixed(),
-					event = e.originalEvent,
-					coefficient = KeyManager.augmented() ? 10 : 1,
-					reactivity = {
-						x: e.offsetX,
-						y: e.offsetY,
-						coefficient: options.reactiveZoom * coefficient
-					};
+				event = e.originalEvent,
+				coefficient = KeyManager.augmented() ? 10 : 1,
+				reactivity = {
+					x: e.offsetX || event.layerX,
+					y: e.offsetY || event.layerY,
+					coefficient: options.reactiveZoom * coefficient
+				};
 
-				if (event.wheelDelta > 0) {
+				if (event.wheelDelta > 0 || event.detail > 0) {
 					Transform.scale(c, coefficient / 100, reactivity)
-				} else if (event.wheelDelta < 0) {
+				} else if (event.wheelDelta < 0 || event.detail < 0) {
 					Transform.scale(c, -coefficient / 100, reactivity)
 				}
-			}).css({
+			})
+			.css({
 				cursor: 'move',
 				position: 'absolute',
 				zIndex: 360
