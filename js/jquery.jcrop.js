@@ -506,8 +506,8 @@
 				} else if (typeof (x) === "number" && typeof (y) === "number") {
 					var maxTranslate = (original.max) / 2;
 
-					t[0] = clamp(t[0] + x, -maxTranslate, maxTranslate);
-					t[1] = clamp(t[1] + y, -maxTranslate, maxTranslate);
+					t[0] = clamp(t[0] + (x * xscale), -maxTranslate, maxTranslate);
+					t[1] = clamp(t[1] + (y * yscale),-maxTranslate, maxTranslate);
 
 					trigger($t, 'change change:translate');
 				}
@@ -1049,8 +1049,8 @@
 
 				if (!options.shade) {
 					$img2.css({
-						top: px(-y + translate[1]),
-						left: px(-x + translate[0])
+						top: px(-y + translate[1] / xscale),
+						left: px(-x + translate[0] / yscale)
 					});
 				}
 
@@ -1385,8 +1385,8 @@
 			}
 
 			function translate(offset) {
-				var x = offset[0],
-					y = offset[1];
+				var x = offset[0] / xscale,
+					y = offset[1] / yscale;
 
 				$img.css({
 					left: x,

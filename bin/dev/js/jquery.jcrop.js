@@ -57,8 +57,8 @@ var defaults = {
     return {
       x: (selection.x - transform.t[0]) * scale | 0,
       y: (selection.y - transform.t[1]) * scale | 0,
-      w: selection.w * scale | 0,
-      h: selection.h * scale | 0,
+      width: selection.w * scale | 0,
+      height: selection.h * scale | 0,
       rotate: transform.r
     };
   }
@@ -575,8 +575,8 @@ module.exports = defaults;
 				} else if (typeof (x) === "number" && typeof (y) === "number") {
 					var maxTranslate = (original.max) / 2;
 
-					t[0] = clamp(t[0] + x, -maxTranslate, maxTranslate);
-					t[1] = clamp(t[1] + y, -maxTranslate, maxTranslate);
+					t[0] = clamp(t[0] + (x * xscale), -maxTranslate, maxTranslate);
+					t[1] = clamp(t[1] + (y * yscale),-maxTranslate, maxTranslate);
 
 					trigger($t, 'change change:translate');
 				}
@@ -1118,8 +1118,8 @@ module.exports = defaults;
 
 				if (!options.shade) {
 					$img2.css({
-						top: px(-y + translate[1]),
-						left: px(-x + translate[0])
+						top: px(-y + translate[1] / xscale),
+						left: px(-x + translate[0] / yscale)
 					});
 				}
 
@@ -1454,8 +1454,8 @@ module.exports = defaults;
 			}
 
 			function translate(offset) {
-				var x = offset[0],
-					y = offset[1];
+				var x = offset[0] / xscale,
+					y = offset[1] / yscale;
 
 				$img.css({
 					left: x,

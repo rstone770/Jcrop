@@ -56,8 +56,8 @@ var defaults = {
     return {
       x: (selection.x - transform.t[0]) * scale | 0,
       y: (selection.y - transform.t[1]) * scale | 0,
-      w: selection.w * scale | 0,
-      h: selection.h * scale | 0,
+      width: selection.w * scale | 0,
+      height: selection.h * scale | 0,
       rotate: transform.r
     };
   }
