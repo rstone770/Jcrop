@@ -49,8 +49,8 @@ A better method for styling can be seen below with .jcrop-light
 }
 /* Selection Handles */
 .jcrop-handle {
-  background-color: #333333;
-  border: 1px #eeeeee solid;
+  background-color: #333;
+  border: 1px #eee solid;
   width: 7px;
   height: 7px;
   font-size: 1px;

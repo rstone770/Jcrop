@@ -126,17 +126,17 @@ module.exports = defaults;
 		function supportsColorFade() {
 			return $.fx.step.hasOwnProperty('backgroundColor');
 		}
-		function getPos(obj) //{{{
+		function getPos(obj)
 		{
 			var pos = $(obj).offset();
 			return [pos.left, pos.top];
 		}
-		//}}}
-		function mouseAbs(e) //{{{
+
+		function mouseAbs(e)
 		{
 			return [(e.pageX - docOffset[0]), (e.pageY - docOffset[1])];
 		}
-		///}}}
+
 		function clamp(number, low, high) {
 			if (typeof (high) === "number" && number > high) {
 				return high;
@@ -146,8 +146,8 @@ module.exports = defaults;
 
 			return number;
 		}
-		//}}}
-		function setOptions(opt) //{{{
+
+		function setOptions(opt)
 		{
 			if (typeof (opt) !== 'object') opt = {};
 			options = $.extend(options, opt);
@@ -156,8 +156,8 @@ module.exports = defaults;
 				if (typeof (options[e]) !== 'function') options[e] = function () { };
 			});
 		}
-		//}}}
-		function startDragMode(mode, pos, touch) //{{{
+
+		function startDragMode(mode, pos, touch)
 		{
 			docOffset = getPos($trk);
 			Tracker.setCursor(mode === 'move' ? mode : mode + '-resize');
@@ -175,8 +175,8 @@ module.exports = defaults;
 
 			Tracker.activateHandlers(dragmodeHandler(mode, fc), doneSelect, touch);
 		}
-		//}}}
-		function dragmodeHandler(mode, f) //{{{
+
+		function dragmodeHandler(mode, f)
 		{
 			return function (pos) {
 				if (!options.aspectRatio) {
@@ -214,8 +214,8 @@ module.exports = defaults;
 				Selection.update();
 			};
 		}
-		//}}}
-		function createMover(pos) //{{{
+
+		function createMover(pos)
 		{
 			var lloc = pos;
 			KeyManager.watchKeys();
@@ -227,8 +227,8 @@ module.exports = defaults;
 				Selection.update();
 			};
 		}
-		//}}}
-		function oppLockCorner(ord) //{{{
+
+		function oppLockCorner(ord)
 		{
 			switch (ord) {
 				case 'n':
@@ -249,8 +249,8 @@ module.exports = defaults;
 					return 'ne';
 			}
 		}
-		//}}}
-		function createDragger(ord) //{{{
+
+		function createDragger(ord)
 		{
 			return function (e) {
 				if (options.disabled) {
@@ -271,8 +271,8 @@ module.exports = defaults;
 				return false;
 			};
 		}
-		//}}}
-		function presize($obj, w, h) //{{{
+
+		function presize($obj, w, h)
 		{
 			var nw = $obj.width(),
 				nh = $obj.height();
@@ -288,8 +288,8 @@ module.exports = defaults;
 			yscale = $obj.height() / nh;
 			$obj.width(nw).height(nh);
 		}
-		//}}}
-		function unscale(c) //{{{
+
+		function unscale(c)
 		{
 			return {
 				x: c.x * xscale,
@@ -300,8 +300,8 @@ module.exports = defaults;
 				h: c.h * yscale
 			};
 		}
-		//}}}
-		function doneSelect(pos) //{{{
+
+		function doneSelect(pos)
 		{
 			var c = Coords.getFixed();
 			if ((c.w > options.minSelect[0]) && (c.h > options.minSelect[1])) {
@@ -312,8 +312,8 @@ module.exports = defaults;
 			}
 			Tracker.setCursor(options.allowSelect ? 'crosshair' : 'default');
 		}
-		//}}}
-		function newSelection(e) //{{{
+
+		function newSelection(e)
 		{
 			if (options.disabled) {
 				return;
@@ -335,14 +335,14 @@ module.exports = defaults;
 			e.preventDefault();
 			return false;
 		}
-		//}}}
-		function selectDrag(pos) //{{{
+
+		function selectDrag(pos)
 		{
 			Coords.setCurrent(pos);
 			Selection.update();
 		}
-		//}}}
-		function newTracker() //{{{
+
+		function newTracker()
 		{
 			var trk = $('<div></div>').addClass(cssClass('tracker'));
 			if (is_msie) {
@@ -353,7 +353,7 @@ module.exports = defaults;
 			}
 			return trk;
 		}
-		//}}}
+
 
 		// }}}
 		// Initialization {{{
@@ -576,15 +576,21 @@ module.exports = defaults;
 					var maxTranslate = (original.max) / 2;
 
 					t[0] = clamp(t[0] + (x * xscale), -maxTranslate, maxTranslate);
-					t[1] = clamp(t[1] + (y * yscale),-maxTranslate, maxTranslate);
+					t[1] = clamp(t[1] + (y * yscale), -maxTranslate, maxTranslate);
 
 					trigger($t, 'change change:translate');
 				}
 			}
 
+			function reset() {
+				t = [0, 0];
+				s = 1;
+				r = 0
+			}
+
 			function scale(c, step, reactivity) {
 				if (typeof (c) !== "undefined") {
-					s = clamp(s + step, 0, 1);
+						s = clamp(s + step, 0, 1);
 
 					if (reactivity && s != 1) {
 						translate(-reactivity.coefficient * (2 * reactivity.x - c.w) / c.w, -reactivity.coefficient * (2 * reactivity.y - c.h) / c.h);
@@ -608,11 +614,18 @@ module.exports = defaults;
 				$t.on(event, cb);
 			}
 
+			function reset() {
+				r = 0;
+				t = [0, 0];
+				s = 1.0;
+			}
+
 			return {
 				rotate: rotate,
 				translate: translate,
 				scale: scale,
 				getTransform: getTransform,
+				reset: reset,
 				on: on
 			};
 		}());
@@ -627,14 +640,14 @@ module.exports = defaults;
 				y2 = 0,
 				ox, oy;
 
-			function setPressed(pos) //{{{
+			function setPressed(pos)
 			{
 				pos = rebound(pos);
 				x2 = x1 = pos[0];
 				y2 = y1 = pos[1];
 			}
-			//}}}
-			function setCurrent(pos) //{{{
+
+			function setCurrent(pos)
 			{
 				pos = rebound(pos);
 				ox = pos[0] - x2;
@@ -642,13 +655,13 @@ module.exports = defaults;
 				x2 = pos[0];
 				y2 = pos[1];
 			}
-			//}}}
-			function getOffset() //{{{
+
+			function getOffset()
 			{
 				return [ox, oy];
 			}
-			//}}}
-			function moveOffset(offset) //{{{
+
+			function moveOffset(offset)
 			{
 				var ox = offset[0],
 					oy = offset[1],
@@ -679,8 +692,8 @@ module.exports = defaults;
 				y1 += oy;
 				y2 += oy;
 			}
-			//}}}
-			function getCorner(ord) //{{{
+
+			function getCorner(ord)
 			{
 				var c = getFixed();
 				switch (ord) {
@@ -694,8 +707,8 @@ module.exports = defaults;
 						return [c.x, c.y2];
 				}
 			}
-			//}}}
-			function getFixed() //{{{
+
+			function getFixed()
 			{
 				if (!options.aspectRatio) {
 					return getRect();
@@ -793,8 +806,8 @@ module.exports = defaults;
 
 				return makeObj(flipCoords(x1, y1, xx, yy));
 			}
-			//}}}
-			function rebound(p) //{{{
+
+			function rebound(p)
 			{
 				if (p[0] < 0) p[0] = 0;
 				if (p[1] < 0) p[1] = 0;
@@ -804,8 +817,8 @@ module.exports = defaults;
 
 				return [Math.round(p[0]), Math.round(p[1])];
 			}
-			//}}}
-			function flipCoords(x1, y1, x2, y2) //{{{
+
+			function flipCoords(x1, y1, x2, y2)
 			{
 				var xa = x1,
 					xb = x2,
@@ -821,8 +834,8 @@ module.exports = defaults;
 				}
 				return [xa, ya, xb, yb];
 			}
-			//}}}
-			function getRect() //{{{
+
+			function getRect()
 			{
 				var xsize = x2 - x1,
 					ysize = y2 - y1,
@@ -881,8 +894,8 @@ module.exports = defaults;
 
 				return makeObj(flipCoords(x1, y1, x2, y2));
 			}
-			//}}}
-			function makeObj(a) //{{{
+
+			function makeObj(a)
 			{
 				return {
 					x: a[0],
@@ -893,7 +906,7 @@ module.exports = defaults;
 					h: a[3] - a[1]
 				};
 			}
-			//}}}
+
 
 			function on(event, cb) {
 				$c.on(event, cb);
@@ -911,7 +924,7 @@ module.exports = defaults;
 			};
 		}());
 
-		//}}}
+
 		// Shade Module {{{
 		var Shade = (function () {
 			var enabled = false,
@@ -1038,7 +1051,7 @@ module.exports = defaults;
 				img2height = $img2.height();;
 
 			// Private Methods
-			function insertBorder(type) //{{{
+			function insertBorder(type)
 			{
 				var jq = $('<div />').css({
 					position: 'absolute',
@@ -1047,8 +1060,8 @@ module.exports = defaults;
 				$img_holder.append(jq);
 				return jq;
 			}
-			//}}}
-			function dragDiv(ord, zi) //{{{
+
+			function dragDiv(ord, zi)
 			{
 				var jq = $('<div />').mousedown(createDragger(ord)).css({
 					cursor: ord + '-resize',
@@ -1063,8 +1076,8 @@ module.exports = defaults;
 				$hdl_holder.append(jq);
 				return jq;
 			}
-			//}}}
-			function insertHandle(ord) //{{{
+
+			function insertHandle(ord)
 			{
 				var hs = options.handleSize,
 
@@ -1076,21 +1089,21 @@ module.exports = defaults;
 
 				return div;
 			}
-			//}}}
-			function insertDragbar(ord) //{{{
+
+			function insertDragbar(ord)
 			{
 				return dragDiv(ord, hdep++).addClass('jcrop-dragbar');
 			}
-			//}}}
-			function createDragbars(li) //{{{
+
+			function createDragbars(li)
 			{
 				var i;
 				for (i = 0; i < li.length; i++) {
 					dragbar[li[i]] = insertDragbar(li[i]);
 				}
 			}
-			//}}}
-			function createBorders(li) //{{{
+
+			function createBorders(li)
 			{
 				var cl, i;
 				for (i = 0; i < li.length; i++) {
@@ -1103,16 +1116,16 @@ module.exports = defaults;
 					borders[li[i]] = insertBorder(cl);
 				}
 			}
-			//}}}
-			function createHandles(li) //{{{
+
+			function createHandles(li)
 			{
 				var i;
 				for (i = 0; i < li.length; i++) {
 					handle[li[i]] = insertHandle(li[i]);
 				}
 			}
-			//}}}
-			function moveto(x, y) //{{{
+
+			function moveto(x, y)
 			{
 				var translate = Transform.translate();
 
@@ -1128,8 +1141,8 @@ module.exports = defaults;
 					left: px(x)
 				});
 			}
-			//}}}
-			function resize(w, h) //{{{
+
+			function resize(w, h)
 			{
 				$sel.width(Math.round(w)).height(Math.round(h));
 			}
@@ -1143,8 +1156,8 @@ module.exports = defaults;
 			function scale(coefficient) {
 				$img2.width(img2width * coefficient).height(img2height * coefficient);
 			}
-			//}}}
-			function refresh() //{{{
+
+			function refresh()
 			{
 				var c = Coords.getFixed();
 
@@ -1153,17 +1166,17 @@ module.exports = defaults;
 
 				updateVisible();
 			}
-			//}}}
+
 
 			// Internal Methods
-			function updateVisible(select) //{{{
+			function updateVisible(select)
 			{
 				if (awake) {
 					return update(select);
 				}
 			}
-			//}}}
-			function update(select) //{{{
+
+			function update(select)
 			{
 				var c = Coords.getFixed(),
 					r = Transform.rotate(),
@@ -1184,8 +1197,8 @@ module.exports = defaults;
 					options.onChange.call(api, unscale(c));
 				}
 			}
-			//}}}
-			function setBgOpacity(opacity, force, now) //{{{
+
+			function setBgOpacity(opacity, force, now)
 			{
 				if (!awake && !force) return;
 				if (options.bgFade && !now) {
@@ -1199,8 +1212,8 @@ module.exports = defaults;
 					$img.css('opacity', opacity);
 				}
 			}
-			//}}}
-			function show() //{{{
+
+			function show()
 			{
 				$sel.show();
 
@@ -1209,8 +1222,8 @@ module.exports = defaults;
 
 				awake = true;
 			}
-			//}}}
-			function release() //{{{
+
+			function release()
 			{
 				disableHandles();
 				$sel.hide();
@@ -1221,15 +1234,15 @@ module.exports = defaults;
 				awake = false;
 				options.onRelease.call(api);
 			}
-			//}}}
-			function showHandles() //{{{
+
+			function showHandles()
 			{
 				if (seehandles) {
 					$hdl_holder.show();
 				}
 			}
-			//}}}
-			function enableHandles() //{{{
+
+			function enableHandles()
 			{
 				seehandles = true;
 				if (options.allowResize) {
@@ -1237,14 +1250,14 @@ module.exports = defaults;
 					return true;
 				}
 			}
-			//}}}
-			function disableHandles() //{{{
+
+			function disableHandles()
 			{
 				seehandles = false;
 				$hdl_holder.hide();
 			}
-			//}}}
-			function animMode(v) //{{{
+
+			function animMode(v)
 			{
 				if (v) {
 					animating = true;
@@ -1254,8 +1267,8 @@ module.exports = defaults;
 					enableHandles();
 				}
 			}
-			//}}}
-			function done() //{{{
+
+			function done()
 			{
 				animMode(false);
 				refresh();
@@ -1264,7 +1277,7 @@ module.exports = defaults;
 			function zoom(e) {
 				console.log('zoom');
 			}
-			//}}}
+
 			// Insert draggable elements {{{
 			// Insert border divs for outline
 
@@ -1277,7 +1290,7 @@ module.exports = defaults;
 			if (options.drawBorders && $.isArray(options.createBorders))
 				createBorders(options.createBorders);
 
-			//}}}
+
 
 			// This is a hack for iOS5 to support drag/move touch functionality
 			$(document).bind('touchstart.jcrop-ios', function (e) {
@@ -1343,14 +1356,14 @@ module.exports = defaults;
 			};
 		}());
 
-		//}}}
+
 		// Tracker Module {{{
 		var Tracker = (function () {
 			var onMove = function () { },
 				onDone = function () { },
 				trackDoc = options.trackDocument;
 
-			function toFront(touch) //{{{
+			function toFront(touch)
 			{
 				$trk.css({
 					zIndex: 450
@@ -1366,22 +1379,22 @@ module.exports = defaults;
 					  .bind('mousemove.jcrop', trackMove)
 					  .bind('mouseup.jcrop', trackUp);
 			}
-			//}}}
-			function toBack() //{{{
+
+			function toBack()
 			{
 				$trk.css({
 					zIndex: 290
 				});
 				$(document).unbind('.jcrop');
 			}
-			//}}}
-			function trackMove(e) //{{{
+
+			function trackMove(e)
 			{
 				onMove(mouseAbs(e));
 				return false;
 			}
-			//}}}
-			function trackUp(e) //{{{
+
+			function trackUp(e)
 			{
 				e.preventDefault();
 				e.stopPropagation();
@@ -1403,8 +1416,8 @@ module.exports = defaults;
 				return false;
 			}
 
-			//}}}
-			function activateHandlers(move, done, touch) //{{{
+
+			function activateHandlers(move, done, touch)
 			{
 				btndown = true;
 				onMove = move;
@@ -1412,23 +1425,23 @@ module.exports = defaults;
 				toFront(touch);
 				return false;
 			}
-			//}}}
-			function trackTouchMove(e) //{{{
+
+			function trackTouchMove(e)
 			{
 				onMove(mouseAbs(Touch.cfilter(e)));
 				return false;
 			}
-			//}}}
-			function trackTouchEnd(e) //{{{
+
+			function trackTouchEnd(e)
 			{
 				return trackUp(Touch.cfilter(e));
 			}
-			//}}}
-			function setCursor(t) //{{{
+
+			function setCursor(t)
 			{
 				$trk.css('cursor', t);
 			}
-			//}}}
+
 
 			if (!trackDoc) {
 				$trk.mousemove(trackMove).mouseup(trackUp).mouseout(trackUp);
@@ -1478,7 +1491,7 @@ module.exports = defaults;
 			};
 		}());
 
-		//}}}
+
 		// KeyManager Module {{{
 		var KeyManager = (function () {
 			var augment = false,
@@ -1504,20 +1517,20 @@ module.exports = defaults;
 				alt: 1024
 			};
 
-			function watchKeys() //{{{
+			function watchKeys()
 			{
 				if (options.keySupport) {
 					$keymgr.show();
 					$keymgr.focus();
 				}
 			}
-			//}}}
-			function onBlur(e) //{{{
+
+			function onBlur(e)
 			{
 				$keymgr.hide();
 			}
-			//}}}
-			function doNudge(e, x, y) //{{{
+
+			function doNudge(e, x, y)
 			{
 				if (options.allowMove) {
 					Coords.moveOffset([x, y]);
@@ -1527,8 +1540,8 @@ module.exports = defaults;
 				e.preventDefault();
 				e.stopPropagation();
 			}
-			//}}}
-			function doRotate(e, theta, snap) { //{{{
+
+			function doRotate(e, theta, snap) {
 				if (options.allowRotate) {
 					if (!snap) {
 						Transform.rotate(theta);
@@ -1541,7 +1554,7 @@ module.exports = defaults;
 
 				e.preventDefault();
 				e.stopPropagation();
-			}//}}} */
+			}
 
 			function doPan(e, x, y) {
 				if (options.allowPan) {
@@ -1552,7 +1565,7 @@ module.exports = defaults;
 				e.stopPropagation();
 			}
 
-			function parseKey(e) //{{{
+			function parseKey(e)
 			{
 				var key = e.keyCode | (e.shiftKey ? keys.shift : 0) | (e.metaKey ? keys.meta : 0) | (e.altKey ? keys.alt : 0),
 					coefficient = e.shiftKey ? 10 : 1;
@@ -1619,7 +1632,7 @@ module.exports = defaults;
 
 				return false;
 			}
-			//}}}
+
 
 			function augmented() {
 				return augment;
@@ -1647,15 +1660,26 @@ module.exports = defaults;
 				augmented: augmented
 			};
 		}());
-		//}}}
+
 		// }}}
 		// API methods {{{
-		function setClass(cname) //{{{
+		function setClass(cname)
 		{
 			$div.removeClass().addClass(cssClass('holder')).addClass(cname);
 		}
-		//}}}
-		function animateTo(a, callback) //{{{
+
+		function cover()
+		{
+			setTransform();
+			setSelectRaw([0, 0, boundx * xscale, boundy * yscale]);
+
+			var coords = Coords.getFixed();
+			setSelectRaw([(boundx - coords.w) / 2, (boundy - coords.h) / 2, (boundx + coords.w) / 2, (boundy + coords.h) / 2]);
+			report();
+			Selection.enableHandles();
+		}
+
+		function animateTo(a, callback)
 		{
 			var x1 = a[0] / xscale,
 				y1 = a[1] / yscale,
@@ -1716,8 +1740,9 @@ module.exports = defaults;
 			queueAnimator();
 		}
 
-		function report() {
-			var format = options.formatSelect.call(api, tellSelect(), tellTransform());
+		function report()
+		{
+			var format = options.formatSelect.call(api, getSelection(), getTransform());
 
 			if (typeof(format) === "array") {
 				options.onSelect.apply(api, format);
@@ -1726,71 +1751,84 @@ module.exports = defaults;
 			}
 		}
 
-		//}}}
-		function setSelect(rect) //{{{
+		function setSelect(rect)
 		{
 			setSelectRaw([rect[0] / xscale, rect[1] / yscale, rect[2] / xscale, rect[3] / yscale]);
-			options.onSelect.call(api, unscale(Coords.getFixed()));
+			report();
 			Selection.enableHandles();
 		}
-		//}}}
-		function setSelectRaw(l) //{{{
+
+		function setTransform(t, s, r)
+		{
+			Transform.reset();
+
+			if (t != null) {
+				Transform.translate(t[0], t[1]);
+			}
+
+			if (s != null) {
+				Transform.scale(Coords.getFixed(), s);
+			}
+
+			if (r != null) {
+				Transform.rotate(r);
+			}
+
+			Selection.update();
+		}
+
+		function setSelectRaw(l)
 		{
 			Coords.setPressed([l[0], l[1]]);
 			Coords.setCurrent([l[2], l[3]]);
 			Selection.update();
 		}
-		//}}}
-		function tellSelect() //{{{
+
+		function getSelection()
 		{
 			return unscale(Coords.getFixed());
 		}
 
-		function tellTransform() {
+		function getTransform()
+		{
 			return Transform.getTransform();
 		}
 
-		//}}}
-		function tellScaled() //{{{
-		{
-			return Coords.getFixed();
-		}
-		//}}}
-		function setOptionsNew(opt) //{{{
+		function setOptionsNew(opt)
 		{
 			setOptions(opt);
 			interfaceUpdate();
 		}
-		//}}}
-		function disableCrop() //{{{
+
+		function disableCrop()
 		{
 			options.disabled = true;
 			Selection.disableHandles();
 			Selection.setCursor('default');
 			Tracker.setCursor('default');
 		}
-		//}}}
-		function enableCrop() //{{{
+
+		function enableCrop()
 		{
 			options.disabled = false;
 			interfaceUpdate();
 		}
-		//}}}
-		function cancelCrop() //{{{
+
+		function cancelCrop()
 		{
 			Selection.done();
 			Tracker.activateHandlers(null, null);
 		}
-		//}}}
-		function destroy() //{{{
+
+		function destroy()
 		{
 			$div.remove();
 			$origimg.show();
 			$origimg.css('visibility', 'visible');
 			$(obj).removeData('Jcrop');
 		}
-		//}}}
-		function setImage(src, callback) //{{{
+
+		function setImage(src, callback)
 		{
 			Selection.release();
 			disableCrop();
@@ -1818,7 +1856,7 @@ module.exports = defaults;
 			};
 			img.src = src;
 		}
-		//}}}
+
 		function colorChangeMacro($obj, color, now) {
 			var mycolor = color || options.bgColor;
 			if (options.bgFade && supportsColorFade() && options.fadeTime && !now) {
@@ -1832,9 +1870,8 @@ module.exports = defaults;
 				$obj.css('backgroundColor', mycolor);
 			}
 		}
-		function interfaceUpdate(alt) //{{{
-			// This method tweaks the interface based on options object.
-			// Called when options are changed and at end of initialization.
+
+		function interfaceUpdate(alt)
 		{
 			if (options.allowResize) {
 				if (alt) {
@@ -1890,8 +1927,6 @@ module.exports = defaults;
 
 			Selection.refresh();
 		}
-		//}}}
-		//}}}
 
 		if (Touch.support) $trk.bind('touchstart.jcrop', Touch.newSelection);
 
@@ -1901,10 +1936,12 @@ module.exports = defaults;
 		var api = {
 			setImage: setImage,
 			animateTo: animateTo,
+			cover: cover,
 			setSelect: setSelect,
+			setTransform: setTransform,
 			setOptions: setOptionsNew,
-			tellSelect: tellSelect,
-			tellScaled: tellScaled,
+			getSelection: getSelection,
+			getTransform: getTransform,
 			setClass: setClass,
 
 			disable: disableCrop,
@@ -1940,7 +1977,8 @@ module.exports = defaults;
 		$origimg.data('Jcrop', api);
 		return api;
 	};
-	$.fn.Jcrop = function (options, callback) //{{{
+
+	$.fn.Jcrop = function (options, callback)
 	{
 		var api;
 		// Iterate over each object, attach Jcrop
@@ -1971,7 +2009,7 @@ module.exports = defaults;
 		// Return "this" so the object is chainable (jQuery-style)
 		return this;
 	};
-	//}}}
+
 
 	$.Jcrop.Loader = loader;
 	$.Jcrop.defaults = defaults;
